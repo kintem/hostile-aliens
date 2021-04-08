@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hostile Aliens</title>
+  <style>
+    * {
+      text-align: center;
+      box-sizing: border-box;
+      font-family: sans-serif;
+    }
+
+    button {
+      width: 150px;
+      padding: 10px;
+      background-color: #2b2b2b;
+      border: 1px solid white;
+      color: white;
+      margin-top: 2px;
+    }
+
+    #ships {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .ship {
+      border: 1px solid white;
+    }
+
+    .Mother-ship {
+      background-color:#c565dd;
+      width: 100%;
+    }
+
+    .Defence-ship {
+      background-color: #7adf76;
+      width: 20%;
+    }
+
+    .Attack-ship {
+      background-color: #ffc14f;
+      width: 11.11%;
+    }
+  </style>
+</head>
+<body>
+  <div id="ships"></div>
+  <button id="start-button">Start Game</button>
+  <button id="hit-button">Hit</button>
+
+  <script>
+    class Ship {
+      constructor(type, hitPoints, pointsLostPerHit) {
+        this.type = type;
+        this.hitPoints = hitPoints;
+        this.pointsLostPerHit = pointsLostPerHit;
+      }
+
+      generateHTML(index) {
+        return `<div class="${this.type}-ship ship"><h4>${this.type}</h4><p id="points">Hit points:${this.hitPoints}</p></div>`;
+      }
+
+      renderHTML(index) {
+        document.querySelector("#ships").innerHTML += this.generateHTML(index);
+      }
+
+      getHit(index) {
+        this.hitPoints -= this.pointsLostPerHit;
+        if (this.hitPoints <= 0) {
+          game.ships.splice(index, 1);
+        }
+        if (this.hitPoints <= 0 && this.type === "Mother") {
+          game.ships = [];
+        }
+      }
+    };
+
+    const game = {
+      ships: [],
+
+      generateShips() {
+        this.ships = [];
+        this.ships.push(new Ship("Mother", 100, 9));
+
+        for (let i = 0; i < 5; i++) {
+          this.ships.push(new Ship("Defence", 80, 10));
+        }
+
+        for (let i = 0; i < 9; i++) {
+          this.ships.push(new Ship("Attack", 45, 12));
+        }
+
+        this.renderShips();
+      },
+
+      renderShips() {
+        document.querySelector("#ships").innerHTML = "";
+        this.ships.forEach((ship, index) => {
+          ship.renderHTML(index);
+        })
+      }
+    }
+
+    document.querySelector("#hit-button").addEventListener("click", () => {
+      const index = Math.floor(Math.random() * game.ships.length);
+      const hitShip = game.ships[index];
+      hitShip.getHit(index);
+      game.renderShips();
+    })
+
+    document.querySelector("#start-button").addEventListener("click", () => {
+      game.generateShips();
+    });
+  </script>
+</body>
+</html>
